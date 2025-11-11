@@ -1,6 +1,11 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Calendar, Download, Plus } from "lucide-react";
+import { useState } from "react";
 
 const images = [
   {
@@ -42,12 +47,55 @@ const images = [
 ];
 
 const Images = () => {
+  const [open, setOpen] = useState(false);
+  const [editingImage, setEditingImage] = useState<typeof images[0] | null>(null);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Handle form submission
+    setOpen(false);
+    setEditingImage(null);
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div>
-          <h1 className="text-4xl font-bold text-foreground">Images</h1>
-          <p className="text-muted-foreground mt-2">Browse your image gallery</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-foreground">Images</h1>
+            <p className="text-muted-foreground mt-2">Browse your image gallery</p>
+          </div>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Image
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>{editingImage ? "Edit Image" : "Add New Image"}</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Title</Label>
+                  <Input id="title" placeholder="Enter image title" defaultValue={editingImage?.title} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="url">Image URL</Label>
+                  <Input id="url" placeholder="https://..." defaultValue={editingImage?.url} required />
+                </div>
+                <div className="flex justify-end gap-3">
+                  <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">
+                    {editingImage ? "Update" : "Add"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -55,6 +103,10 @@ const Images = () => {
             <Card
               key={image.id}
               className="border-border bg-card hover:bg-card/80 transition-all hover:scale-105 cursor-pointer overflow-hidden"
+              onClick={() => {
+                setEditingImage(image);
+                setOpen(true);
+              }}
             >
               <div className="relative aspect-square">
                 <img src={image.url} alt={image.title} className="w-full h-full object-cover" />

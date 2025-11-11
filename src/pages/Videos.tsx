@@ -1,6 +1,11 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
-import { Play, Calendar, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Play, Calendar, Eye, Plus } from "lucide-react";
+import { useState } from "react";
 
 const videos = [
   {
@@ -38,12 +43,63 @@ const videos = [
 ];
 
 const Videos = () => {
+  const [open, setOpen] = useState(false);
+  const [editingVideo, setEditingVideo] = useState<typeof videos[0] | null>(null);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Handle form submission
+    setOpen(false);
+    setEditingVideo(null);
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div>
-          <h1 className="text-4xl font-bold text-foreground">Videos</h1>
-          <p className="text-muted-foreground mt-2">Manage your video content</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-foreground">Videos</h1>
+            <p className="text-muted-foreground mt-2">Manage your video content</p>
+          </div>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Video
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>{editingVideo ? "Edit Video" : "Add New Video"}</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Title</Label>
+                  <Input id="title" placeholder="Enter video title" defaultValue={editingVideo?.title} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="thumbnail">Thumbnail URL</Label>
+                  <Input id="thumbnail" placeholder="https://..." defaultValue={editingVideo?.thumbnail} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="duration">Duration</Label>
+                  <Input id="duration" placeholder="0:00" defaultValue={editingVideo?.duration} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="views">Views</Label>
+                  <Input id="views" placeholder="0" defaultValue={editingVideo?.views} required />
+                </div>
+                <div className="flex justify-end gap-3">
+                  <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">
+                    {editingVideo ? "Update" : "Add"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -51,6 +107,10 @@ const Videos = () => {
             <Card
               key={video.id}
               className="border-border bg-card hover:bg-card/80 transition-all hover:scale-105 cursor-pointer overflow-hidden"
+              onClick={() => {
+                setEditingVideo(video);
+                setOpen(true);
+              }}
             >
               <div className="relative aspect-video">
                 <img
