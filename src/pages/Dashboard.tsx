@@ -6,7 +6,7 @@ const stats = [
   { title: "Total Videos", value: "247", icon: Video, change: "+12%" },
   { title: "Total Images", value: "1,834", icon: Image, change: "+23%" },
   { title: "Active Projects", value: "12", icon: FolderOpen, change: "+3" },
-  { title: "Total Sales", value: "$45,231", icon: DollarSign, change: "+18%" },
+  // { title: "Total Sales", value: "$45,231", icon: DollarSign, change: "+18%" },
 ];
 
 const recentUploads = [
