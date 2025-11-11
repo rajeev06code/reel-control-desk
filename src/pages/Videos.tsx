@@ -46,11 +46,17 @@ const Videos = () => {
   const [open, setOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState<typeof videos[0] | null>(null);
 
+  // Add language state and available languages
+  const languages = ["English", "Spanish", "French"];
+  // Add selected language to form state
+  const [formLanguage, setFormLanguage] = useState<string>(languages[0]);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle form submission
     setOpen(false);
     setEditingVideo(null);
+    setFormLanguage(languages[0]); // Reset language after submit
   };
 
   return (
@@ -73,6 +79,20 @@ const Videos = () => {
                 <DialogTitle>{editingVideo ? "Edit Video" : "Add New Video"}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Language selector inside modal */}
+                <div className="space-y-2">
+                  <Label htmlFor="form-language">Language</Label>
+                  <select
+                    id="form-language"
+                    value={formLanguage}
+                    onChange={(e) => setFormLanguage(e.target.value)}
+                    className="px-3 py-1 rounded border border-input bg-card text-foreground w-full"
+                  >
+                    {languages.map((l) => (
+                      <option key={l} value={l}>{l}</option>
+                    ))}
+                  </select>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="title">Title</Label>
                   <Input id="title" placeholder="Enter video title" defaultValue={editingVideo?.title} required />
